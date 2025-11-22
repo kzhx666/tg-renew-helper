@@ -78,7 +78,7 @@ del_vps() {
 }
 
 list_vps() {
-    local MSG="📋 当前 VPS 列表：<br><br>"
+    local MSG="📋 当前 VPS 列表：\n\n"
     local COUNT=$(jq 'length' "$VPS_FILE")
     if [ "$COUNT" -eq 0 ]; then
         MSG+="无 VPS"
@@ -88,7 +88,7 @@ list_vps() {
             local URL=$(jq -r ".[$i].url" "$VPS_FILE")
             local EXPIRE=$(jq -r ".[$i].expire" "$VPS_FILE")
             local LEFT=$(( ( $(date -d "$EXPIRE" +%s) - $(date +%s) ) / 86400 ))
-            MSG+="名称：<b>$NAME</b><br>到期：$EXPIRE<br>剩余：$LEFT 天<br>🔗 $URL<br><br>"
+            MSG+="名称：<b>$NAME</b>\n到期：$EXPIRE\n剩余：$LEFT 天\n🔗 $URL\n\n"
         done
     fi
     send_tg "$MSG"
@@ -104,10 +104,10 @@ check_notify() {
             local EXPIRE=$(jq -r ".[$i].expire" "$VPS_FILE")
             local LEFT=$(( ( $(date -d "$EXPIRE" +%s) - $(date +%s) ) / 86400 ))
             if [ "$LEFT" -eq 1 ]; then
-                send_with_button "⚠️ VPS <b>$NAME</b> 明天到期！<br>请点击按钮续期" "$URL"
+                send_with_button "⚠️ VPS <b>$NAME</b> 明天到期！\n请点击按钮续期" "$URL"
             fi
         done
-        sleep 3600
+        sleep 3600  # 每小时检查一次
     done
 }
 
@@ -139,7 +139,7 @@ handle_commands() {
                 
                 case "$MESSAGE" in
                     /start)
-                        send_tg "📌 可用命令：<br>/add 名称|URL|到期日期<br>/seturl 名称 新URL<br>/setdate 名称 YYYY-MM-DD<br>/del 名称<br>/list"
+                        send_tg "📌 可用命令：\n/add 名称|URL|到期日期\n/seturl 名称 新URL\n/setdate 名称 YYYY-MM-DD\n/del 名称\n/list"
                         ;;
                     /list)
                         list_vps
